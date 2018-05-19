@@ -1,0 +1,5 @@
+rail -v   // Revisa version instalada Rails
+ruby -v   // Revisa version instalada Ruby
+
+git config --global user.name // devuelve usuario 
+git remote -v                 // ver nuestra conexion
