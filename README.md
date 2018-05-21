@@ -1,2 +1,0 @@
-# ComandosATOM
-Principiantes
