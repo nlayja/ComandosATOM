@@ -1,0 +1,4 @@
+**Eliminar Repositorio desde la consola de ATOM **
+
+git remote -v    // indica cuantos repositorios se tienen activos en el proyecto, lo cual puede generar conflicto.
+git remote rm origin // asegura cual es el repositorio que deseas eliminar, en este caso es ORIGIN 
