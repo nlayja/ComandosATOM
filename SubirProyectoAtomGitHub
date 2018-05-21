@@ -1,0 +1,26 @@
+**  Subir Proyecto por primera vez desde ATOM a GITHUB **
+una vez ya realizado los pasos siguientes para actulizar proyecto revisar archivo Comandos ATOM/ActualizarProyectoAtomGitHub
+
+Desde consola ATOM teclear
+git config --global user.name "nlayja"             //* Asignas usurio de GitHub de trabajo
+git config --global user.email "your@email"        //* Asignas correo del usurio de GitHub de trabajo
+git init                                           
+git add .
+git commit -am "primer commit"
+git status
+cat ~/.ssh/id_rsa.pub                              
+
+**La consola muestra el mensaje**
+  --ssh-rsa --
+Copiar mensaje y pegar en **GitHub**, Settings/Personal Settings/SSH and GPG keys dentro "NEW SSH KEY"
+dar F5, para actualizar GitHub 
+
+Crear "new repository" en GitHub, en blanco, importante!
+
+Ir a consola ATOM, teclear
+git remote add origin "git@github.com:nlayja/Conceptos-GitHub.git"
+git push -u origin master
+
+ 
+ 
+
