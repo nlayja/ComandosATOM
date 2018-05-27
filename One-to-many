@@ -35,3 +35,160 @@ Add the validation to your recipe.rb model file:
 validates :chef_id, presence: true
 
  
+///****////*****//// important
+rails db:migrate RAILS_ENV=test
+rails test  ---- arroja 16 runs, 22 assertions, 0 failures, 0 errors, 0 skips
+rails console
+Recipe.all  ---- arroja Recipe Load (5.0ms)  SELECT  "recipes".* FROM "recipes" LIMIT ?  [["LIMIT", 11]]
+                 => #<ActiveRecord::Relation []>
+Recipe      ---- Recipe(id: integer, name: string, description: text, created_at: datetime, updated_at: datetime, chef_id: integer)
+exit
+rails console --- revisar One-to-many between chefs and recipes
+Chef.all
+Chef  -----------Chef(id: integer, chefname: string, email: string, created_at: datetime, updated_at: datetime)
+@chef = Chef.new(chefname: "nohemi", email: "nlayja@gmail.com", created_at: Time.now, updated_at: Time.now)  
+---despliega 
+ #<Chef id: nil, chefname: "nohemi", email: "nlayja@gmail.com", created_at: "2018-05-27 21:46:25", updated_at: "2018-05-27 21:4
+6:25">
+
+@chef1 = Chef.create(chefname: "John", email: "john@gmail.com", created_at: Time.now, updated_at: Time.now)
+---despliega 
+  (0.0ms)  begin transaction
+  Chef Exists (0.5ms)  SELECT  1 AS one FROM "chefs" WHERE LOWER("chefs"."email") = LOWER(?) LIMIT ?  [["email", "john@gmail.com"
+], ["LIMIT", 1]]
+  SQL (2.0ms)  INSERT INTO "chefs" ("chefname", "email", "created_at", "updated_at") VALUES (?, ?, ?, ?)  [["chefname", "John"],
+["email", "john@gmail.com"], ["created_at", "2018-05-27 21:53:53.621695"], ["updated_at", "2018-05-27 21:53:53.621695"]]
+   (104.3ms)  commit transaction
+=> #<Chef id: 1, chefname: "John", email: "john@gmail.com", created_at: "2018-05-27 21:53:53", updated_at: "2018-05-27 21:53:53">
+
+
+@chef.save
+---despliega 
+  (0.5ms)  begin transaction
+  Chef Exists (0.5ms)  SELECT  1 AS one FROM "chefs" WHERE LOWER("chefs"."email") = LOWER(?) LIMIT ?  [["email", "nlayja@gmail.co
+m"], ["LIMIT", 1]]
+  SQL (6.0ms)  INSERT INTO "chefs" ("chefname", "email", "created_at", "updated_at") VALUES (?, ?, ?, ?)  [["chefname", "nohemi"]
+, ["email", "nlayja@gmail.com"], ["created_at", "2018-05-27 21:46:25.064362"], ["updated_at", "2018-05-27 21:46:25.064362"]]
+   (124.6ms)  commit transaction
+=> true
+
+Chef.all
+---despliega 
+ Chef Load (0.5ms)  SELECT  "chefs".* FROM "chefs" LIMIT ?  [["LIMIT", 11]]
+=> #<ActiveRecord::Relation [#<Chef id: 1, chefname: "John", email: "john@gmail.com", created_at: "2018-05-27 21:53:53", updated_
+at: "2018-05-27 21:53:53">, #<Chef id: 2, chefname: "nohemi", email: "nlayja@gmail.com", created_at: "2018-05-27 21:46:25", updat
+ed_at: "2018-05-27 21:46:25">]>
+
+chef = Chef.last
+---despliega 
+ Chef Load (0.5ms)  SELECT  "chefs".* FROM "chefs" ORDER BY "chefs"."id" DESC LIMIT ?  [["LIMIT", 1]]
+=> #<Chef id: 2, chefname: "nohemi", email: "nlayja@gmail.com", created_at: "2018-05-27 21:46:25", updated_at: "2018-05-27 21:46:
+25">
+
+chef
+---despliega 
+#<Chef id: 2, chefname: "nohemi", email: "nlayja@gmail.com", created_at: "2018-05-27 21:46:25", updated_at: "2018-05-27 21:46:
+25">
+
+
+recipe = Chef.recipes.build(name: "italian vegtables", description: "amazing italian vegtables cooked for 20 minutes")
+---despliega 
+ #<Recipe id: nil, name: "italian vegtables", description: "amazing italian vegtables cooked for 20 minutes", created_at: nil,
+updated_at: nil, chef_id: 2>
+
+
+recipe.save
+---despliega 
+ (0.0ms)  begin transaction
+  SQL (2.0ms)  INSERT INTO "recipes" ("name", "description", "created_at", "updated_at", "chef_id") VALUES (?, ?, ?, ?, ?)  [["na
+me", "italian vegtables"], ["description", "amazing italian vegtables cooked for 20 minutes"], ["created_at", "2018-05-27 22:07:2
+6.554805"], ["updated_at", "2018-05-27 22:07:26.554805"], ["chef_id", 2]]
+   (108.5ms)  commit transaction
+=> true
+
+
+
+recipe
+---despliega
+#<Recipe id: 1, name: "italian vegtables", description: "amazing italian vegtables cooked for 20 minutes", created_at: "2018-0
+5-27 22:07:26", updated_at: "2018-05-27 22:07:26", chef_id: 2>
+
+recipe.chef
+---despliega
+#<Chef id: 2, chefname: "nohemi", email: "nlayja@gmail.com", created_at: "2018-05-27 21:46:25", updated_at: "2018-05-27 21:46:
+25">
+
+
+recipe.chef.chefname
+---despliega
+=> "nohemi"
+
+
+chef
+---despliega
+#<Chef id: 2, chefname: "nohemi", email: "nlayja@gmail.com", created_at: "2018-05-27 21:46:25", updated_at: "2018-05-27 21:46:
+25">
+
+chef.recipes
+---despliega
+ Recipe Load (0.5ms)  SELECT  "recipes".* FROM "recipes" WHERE "recipes"."chef_id" = ? LIMIT ?  [["chef_id", 2], ["LIMIT", 11]]
+=> #<ActiveRecord::Associations::CollectionProxy [#<Recipe id: 1, name: "italian vegtables", description: "amazing italian vegtab
+les cooked for 20 minutes", created_at: "2018-05-27 22:07:26", updated_at: "2018-05-27 22:07:26", chef_id: 2>]>
+
+
+recipe = Recipe.create(name: "vegtable saute", description: "lots of vegtables cooked in oil for 15 minutes")
+---despliega
+  (0.0ms)  begin transaction
+   (0.0ms)  rollback transaction
+=> #<Recipe id: nil, name: "vegtable saute", description: "lots of vegtables cooked in oil for 15 minutes", created_at: nil, upda
+ted_at: nil, chef_id: nil>
+
+rollback transaction ---error---something happend
+recipe.errors.full_messages               arroja => ["Chef can't be blank", "Chef must exist"]
+recipe = Recipe.new(name: "vegtable saute", description: "lots of vegtables cooked in oil for 15 minutes")
+---despliega
+#<Recipe id: nil, name: "vegtable saute", description: "lots of vegtables cooked in oil for 15 minutes", created_at: nil, updated_at: nil, chef_id: nil>
+recipe = Recipe.new(name: "vegtable saute", description: "lots of vegtables cooked in oil for 15 minutes")
+<Recipe id: nil, name: "vegtable saute", description: "lots of vegtables cooked in oil for 15 minutes", created_at: nil, updated_at: nil, chef_id: nil>
+ted_at: nil, chef_id: nil>
+
+chef = Chef.last
+---despliega 
+ Chef Load (0.5ms)  SELECT  "chefs".* FROM "chefs" ORDER BY "chefs"."id" DESC LIMIT ?  [["LIMIT", 1]]
+=> #<Chef id: 2, chefname: "nohemi", email: "nlayja@gmail.com", created_at: "2018-05-27 21:46:25", updated_at: "2018-05-27 21:46:
+25">
+
+
+
+chef.recipes << recipe
+---despliega
+  (0.5ms)  begin transaction
+  SQL (61.7ms)  INSERT INTO "recipes" ("name", "description", "created_at", "updated_at", "chef_id") VALUES (?, ?, ?, ?, ?)  [["n
+ame", "vegtable saute"], ["description", "lots of vegtables cooked in oil for 15 minutes"], ["created_at", "2018-05-27 22:47:39.1
+45918"], ["updated_at", "2018-05-27 22:47:39.145918"], ["chef_id", 2]]
+   (131.5ms)  commit transaction
+  Recipe Load (1.0ms)  SELECT  "recipes".* FROM "recipes" WHERE "recipes"."chef_id" = ? LIMIT ?  [["chef_id", 2], ["LIMIT", 11]]
+=> #<ActiveRecord::Associations::CollectionProxy [#<Recipe id: 1, name: "italian vegtables", description: "amazing italian vegtab
+les cooked for 20 minutes", created_at: "2018-05-27 22:07:26", updated_at: "2018-05-27 22:07:26", chef_id: 2>, #<Recipe id: 2, na
+me: "vegtable saute", description: "lots of vegtables cooked in oil for 15 minutes", created_at: "2018-05-27 22:47:39", updated_a
+t: "2018-05-27 22:47:39", chef_id: 2>]>
+
+
+chef.recipes
+---despliega
+  Recipe Load (0.5ms)  SELECT  "recipes".* FROM "recipes" WHERE "recipes"."chef_id" = ? LIMIT ?  [["chef_id", 2], ["LIMIT", 11]]
+=> #<ActiveRecord::Associations::CollectionProxy [#<Recipe id: 1, name: "italian vegtables", description: "amazing italian vegtab
+les cooked for 20 minutes", created_at: "2018-05-27 22:07:26", updated_at: "2018-05-27 22:07:26", chef_id: 2>, #<Recipe id: 2, na
+me: "vegtable saute", description: "lots of vegtables cooked in oil for 15 minutes", created_at: "2018-05-27 22:47:39", updated_a
+t: "2018-05-27 22:47:39", chef_id: 2>]>
+
+
+
+Recipe.all
+---despliega
+  Recipe Load (0.5ms)  SELECT  "recipes".* FROM "recipes" LIMIT ?  [["LIMIT", 11]]
+=> #<ActiveRecord::Relation [#<Recipe id: 1, name: "italian vegtables", description: "amazing italian vegtables cooked for 20 min
+utes", created_at: "2018-05-27 22:07:26", updated_at: "2018-05-27 22:07:26", chef_id: 2>, #<Recipe id: 2, name: "vegtable saute",
+ description: "lots of vegtables cooked in oil for 15 minutes", created_at: "2018-05-27 22:47:39", updated_at: "2018-05-27 22:47:
+39", chef_id: 2>]>
+
